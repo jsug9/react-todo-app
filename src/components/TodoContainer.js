@@ -49,10 +49,11 @@ const TodoContainer = () => {
   const setUpdate = (updatedTitle, id) => {
     setTodos(
       todos.map((todo) => {
-        if (todo.id === id) {
-          todo.title = updatedTitle;
+        const currentTodo = todo;
+        if (currentTodo.id === id) {
+          currentTodo.title = updatedTitle;
         }
-        return todo;
+        return currentTodo;
       }),
     );
   };
