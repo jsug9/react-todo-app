@@ -1,75 +1,64 @@
-import React from "react"
+import React, { useState } from "react";
 import styles from "./TodoItem.module.scss"
 import { FaTrash } from "react-icons/fa"
 
-class TodoItem extends React.Component {
-  state = {
-    editing: false,
+const TodoItem = props => {
+  const [editing, setEditing] = useState(false)
+
+  const handleEditing = () => {
+    setEditing(true)
   }
 
-  handleEditing = () => {
-    this.setState({
-      editing: true,
-    })
-  }
-
-  handleUpdatedDone = event => {
+  const handleUpdatedDone = event => {
     if (event.key === "Enter") {
-      this.setState({ editing: false })
+      setEditing(false)
     }
   }
 
-  componentWillUnmount() {
-    console.log("Cleaning up...")
+  const completedStyle = {
+    fontStyle: "italic",
+    color: "#595959",
+    opacity: 0.4,
+    textDecoration: "line-through",
   }
 
-  render() {
-    let viewMode = {}
-    let editMode = {}
+  const { completed, id, title } = props.todo
 
-    if (this.state.editing) {
-      viewMode.display = "none"
-    } else {
-      editMode.display = "none"
-    }
+  let viewMode = {}
+  let editMode = {}
 
-    const completedStyle = {
-      fontStyle: "italic",
-      color: "#595959",
-      opacity: 0.4,
-      textDecoration: "line-through",
-    }
+  if (editing) {
+    viewMode.display = "none"
+  } else {
+    editMode.display = "none"
+  }
 
-    const { completed, id, title } = this.props.todo
-    const { setUpdate } = this.props
-
-    return (
-      <li className={styles.item}>
-        <div onDoubleClick={this.handleEditing} style={viewMode}>
-          <input
-            type="checkbox"
-            className={styles.checkbox}
-            checked={completed}
-            onChange={() => this.props.handleChangeProps(id)}
-          />
-          <button onClick={() => this.props.deleteTodoProps(id)}>
-            <FaTrash style={{ color: "orangered", fontSize: "16px" }} />
-          </button>
-          <span style={completed ? completedStyle : null}>{title}</span>
-        </div>
+  return (
+    <li className={styles.item}>
+      <div onDoubleClick={handleEditing} style={viewMode}>
         <input
-          type="text"
-          style={editMode}
-          className={styles.textInput}
-          value={title}
-          onChange={e => {
-            setUpdate(e.target.value, id)
-          }}
-          onKeyDown={this.handleUpdatedDone}
+          type="checkbox"
+          className={styles.checkbox}
+          checked={completed}
+          onChange={() => props.handleChangeProps(id)}
         />
-      </li>
-    )
-  }
+        <button onClick={() => props.deleteTodoProps(id)}>
+          <FaTrash style={{ color: "orangered", fontSize: "16px" }} />
+        </button>
+        <span style={completed ? completedStyle : null}>{title}</span>
+      </div>
+      <input
+        type="text"
+        style={editMode}
+        className={styles.textInput}
+        value={title}
+        onChange={e => {
+          props.setUpdate(e.target.value, id)
+        }}
+        onKeyDown={handleUpdatedDone}
+      />
+    </li>
+  )
 }
 
 export default TodoItem
