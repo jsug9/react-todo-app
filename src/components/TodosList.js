@@ -1,12 +1,12 @@
 import React from "react"
 
 class TodosList extends React.Component {
-  state = {};
-   
   render() {
     return (
       <ul>
-        <li>Test</li>
+        {this.props.todos.map(todo => (
+          <li>{todo.title}</li>
+        ))}
       </ul>
     )
   }
