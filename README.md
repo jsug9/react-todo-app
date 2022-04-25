@@ -2,7 +2,7 @@
 
 # React To-Do
 
-> In this project I build a mobile and desktop version of a calculator app, using React for the very first time.
+> In this project I build a mobile and desktop version of a To-do app, using React.
 
 ## Built With
 
