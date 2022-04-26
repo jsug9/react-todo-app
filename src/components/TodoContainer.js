@@ -1,36 +1,98 @@
-import React from "react"
-import TodosList from "./TodosList";
-import Header from "./Header"
+import React, { useState, useEffect } from 'react';
+import { Route, Switch } from 'react-router-dom';
+import { v4 as uuidv4 } from 'uuid';
 
-class TodoContainer extends React.Component {
-  state = {
-    todos: [
-      {
-        id: 1,
-        title: "Setup development environment",
-        completed: true
-      },
-      {
-        id: 2,
-        title: "Develop website and add content",
-        completed: false
-      },
-      {
-        id: 3,
-        title: "Deploy to live server",
-        completed: false
+import Header from './Header';
+import Navbar from './Navbar';
+import TodosList from './TodosList';
+import InputTodo from './InputTodo';
+
+import About from './pages/About';
+import NotMatch from './pages/NotMatch';
+
+const TodoContainer = () => {
+  const getInitialTodos = () => {
+    const temp = localStorage.getItem('todos');
+    const savedTodos = JSON.parse(temp);
+    return savedTodos || [];
+  };
+
+  const [todos, setTodos] = useState(getInitialTodos());
+
+  const handleChange = (id) => {
+    setTodos((prevState) => prevState.map((todo) => {
+      if (todo.id === id) {
+        return {
+          ...todo,
+          completed: !todo.completed,
+        };
       }
-    ]
-   };
-   
-  render() {
-    return (
-      <div>
-        <Header />
-        <TodosList todos={this.state.todos} />
-      </div>
-    )
-  }
-}
+      return todo;
+    }));
+  };
 
-export default TodoContainer
+  const delTodo = (id) => {
+    setTodos([
+      ...todos.filter((todo) => todo.id !== id),
+    ]);
+  };
+
+  const addTodoItem = (title) => {
+    const newTodo = {
+      id: uuidv4(),
+      title,
+      completed: false,
+    };
+    setTodos([...todos, newTodo]);
+  };
+
+  const setUpdate = (updatedTitle, id) => {
+    setTodos(
+      todos.map((todo) => {
+        const currentTodo = todo;
+        if (currentTodo.id === id) {
+          currentTodo.title = updatedTitle;
+        }
+        return currentTodo;
+      }),
+    );
+  };
+
+  useEffect(() => {
+    // storing todos items
+    const temp = JSON.stringify(todos);
+    localStorage.setItem('todos', temp);
+  }, [todos]);
+
+  return (
+    <>
+      <Navbar />
+      <Switch>
+        <Route exact path="/">
+          <div className="container">
+            <div className="inner">
+              <Header />
+              <InputTodo addTodoProps={addTodoItem} />
+              <TodosList
+                todos={todos}
+                handleChangeProps={handleChange}
+                deleteTodoProps={delTodo}
+                setUpdate={setUpdate}
+              />
+            </div>
+          </div>
+        </Route>
+
+        <Route path="/about">
+          <About />
+        </Route>
+
+        <Route path="*">
+          <NotMatch />
+        </Route>
+      </Switch>
+    </>
+  );
+};
+
+export default TodoContainer;
